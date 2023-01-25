@@ -56,36 +56,23 @@ image_url_Ori = "https://preview.bitmoji.com/avatar-builder-v3/preview/hair?" \
             "&top=54"
 
 
-def hair_replace():
-	for i in range(1300, 1400):
-		str_hair_replace = str("hair=" + str(i))
-	print(str_hair_replace)
-	return str_hair_replace;
-
-
-str_image_text_Dealed = image_url_Ori.replace("hair=1303", hair_replace());
-print("str_image_text_Dealed",str_image_text_Dealed)
-filename = image_url_Ori.split("/")[-1]
-
-# do something for spilit the correct Part of the code.
-print("filename",filename)
-
-# Open the url image, set stream to True, this will return the stream content.
-r = requests.get(str_image_text_Dealed, stream=True)
-
 if __name__ == "__main__":
 	# Check if the image was retrieved successfully
-	for i in range(1300, 1500):
+	for i in range(1400, 30000):
+		str_nose_replace = str("nose=" + str(i))
+		print(str_nose_replace)
+		str_image_text_Dealed = image_url_Ori.replace("nose=1491", str_nose_replace);
+		r = requests.get(str_image_text_Dealed, stream=True)
 		if r.status_code == 200:
-			print("success at hair case" ,i)
-			output_file_name = "default_face"+ filename + "hair" + i;
+			print("success at nose case" ,i)
+			output_file_name = "default_face" + "nose" + str(i)+ ".png";
 		# Set decode_content value to True, otherwise the downloaded image file's size will be zero.
 			r.raw.decode_content = True
 		# Open a local file with wb ( write binary ) permission.
 			with open(output_file_name, 'wb') as f:
 				shutil.copyfileobj(r.raw, f)
-				print('Image sucessfully Downloaded: ', filename)
+				print('Image sucessfully Downloaded: ', output_file_name)
 		elif r.status_code == 400:
-			print("bad request code" );
+			print("bad request code for nose ", i);
 		else:
 			print('Image Couldn\'t be retreived')
