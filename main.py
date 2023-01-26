@@ -1,13 +1,12 @@
 ## Importing Necessary Modules
+import json
+import os  # use OS lib to create
 import shutil  # to save it locally
 import requests  # to get image from the web
-import os #use OS lib to create
-import json
 
-#Global variables
-Nose_Dictionary = {"Nose" : []}
-Ear_Dictionary = {"Ear":[]}
-Eye_Dictionary = {"Eye":[]}
+# Global variables
+Output_Dictionary = {}
+
 """
 Original Url:
 https://preview.bitmoji.com/avatar-builder-v3/preview/hair?
@@ -56,91 +55,98 @@ image_url_Ori = "https://preview.bitmoji.com/avatar-builder-v3/preview/hair?" \
                 "&pupil=2152" \
                 "&top=54"
 
-def nose_replace():
-	"""
-	This is the nose replace funtion
+word_range_list = ["scale=3",
+                   "&gender=2",
+                   "&style=5",
+                   "&rotation=0",
+                   "&body=7",
+                   "&bottom=137",
+                   "&brow=1574",
+                   "&clothing_type=1",
+                   "&ear=1430",
+                   "&eye=1616",
+                   "&eyelash=-1",
+                   "&face_proportion=1",
+                   "&hair=1303",
+                   "&is_tucked=0",
+                   "&jaw=1407",
+                   "&mouth=2340",
+                   "&nose=1491",
+                   "&pupil=2152",
+                   "&top=54"]
+
+word_list = ['scale', 'gender', 'style', 'rotation', 'body',
+             'bottom', 'brow', 'clothing_type', 'ear', 'eye',
+             'eyelash', 'face_proportion', 'hair',
+             'is_tucked', 'jaw', 'mouth', 'nose', 'pupil', 'top']
+
+
+def replacement():
+    """This is the nose replace funtion.
 	it will replace all the nose on the default faces from orginal link
-
 	:return: it does not return anything, but it will generate the files
 	"""
-	try:
-		os.mkdir('result');
-	except FileExistsError:
-		print("folder already exists");
-	
-	try:
-		os.mkdir("result/nose_result");
-	except FileExistsError:
-		print("folder already exists");
-	
-	for i in range(1434, 2000):# The range here could be changed to check every number.
-		str_nose_replace = str("nose=" + str(i)); #replace the string in the url
-		print(str_nose_replace);
-		str_image_text_Dealed = image_url_Ori.replace("nose=1491", str_nose_replace);
-		r = requests.get(str_image_text_Dealed, stream=True);
-		if r.status_code == 200:
-			print("success get nose case", i);
-			Nose_Dictionary["Nose"].append(i); #update the list
-			output_file_name = "result/nose_result/"+"default_face" + "_nose_" + str(i) + ".png";
-			# Set decode_content value to True, otherwise the downloaded image file's size will be zero.
-			r.raw.decode_content = True;
-			# Open a local file with wb ( write binary ) permission.
-			with open(output_file_name, 'wb') as f:
-				shutil.copyfileobj(r.raw, f)
-				print('Image sucessfully Downloaded: ', output_file_name);
-		elif r.status_code == 400:
-			print("bad request code for nose ", i);
-		else:
-			print('Image Couldn\'t be retreived');
-	Nose_json_data = json.dumps(Nose_Dictionary)
-	Json_file = "Nose.json"
-	with open(Json_file,"wb") as f:
-		f.write(Nose_json_data);
-		print("succssful create the Json of Nose")
 
+    try:
+        os.mkdir('result');
+    except FileExistsError:
+        print("folder already exists");
 
-def nose_replace():
-	"""
-	This is the ear replace funtion
-	it will replace all the ear on the default faces from orginal link
+    word_list_total = word_list;
 
-	:return: it does not return anything, but it will generate the files
-	"""
-	try:
-		os.mkdir('result');
-	except FileExistsError:
-		print("folder already exists");
+    for j in range(1,len(word_list_total)):
+        #from 1 becasue scale do not need change
+        face_part = word_list[j];
+        word_need_replace = word_range_list[j]
 
-	try:
-		os.mkdir("result/ear_result");
-	except FileExistsError:
-		print("folder already exists");
+        dir_text = "result/" + face_part;
 
-	for i in range(1434, 2000):  # The range here could be changed to check every number.
-		str_ear_replace = str("ear=" + str(i));  # replace the string in the url
-		print(str_ear_replace);
-		str_image_text_Dealed = image_url_Ori.replace("ear=1491", str_ear_replace);
-		r = requests.get(str_image_text_Dealed, stream=True);
-		if r.status_code == 200:
-			print("success get ear case", i);
-			Ear_Dictionary["ear"].append(i);  # update the list
-			output_file_name = "result/ear_result/" + "default_face" + "_ear_" + str(i) + ".png";
-			# Set decode_content value to True, otherwise the downloaded image file's size will be zero.
-			r.raw.decode_content = True;
-			# Open a local file with wb ( write binary ) permission.
-			with open(output_file_name, 'wb') as f:
-				shutil.copyfileobj(r.raw, f)
-				print('Image sucessfully Downloaded: ', output_file_name);
-		elif r.status_code == 400:
-			print("bad request code for ear ", i);
-		else:
-			print('Image Couldn\'t be retreived');
-	ear_json_data = json.dumps(Ear_Dictionary)
-	Json_file = "ear.json"
-	with open(Json_file, "wb") as f:
-		f.write(ear_json_data);
-		print("succssful create the Json of ear")
+        try:
+            os.mkdir(dir_text);
+        except FileExistsError:
+            print("folder already exists");
+        Output_Dictionary.update({face_part: []});
+
+        print("Output_Dictionary",Output_Dictionary)
+        print("start to work with", dir_text);
+        ##################################################################
+
+        ##ilterate the whole range of the code.
+        for i in range(1999, 2000):  # The range here could be changed to check every number.
+
+            str_replace = str("&" + face_part + "=" + str(i));  # replace the string in the url
+            print("str_replace",str_replace);
+
+            str_image_text_Dealed = image_url_Ori.replace(word_need_replace, str_replace);
+            print("str_image_text_Dealed",str_image_text_Dealed)
+            r = requests.get(str_image_text_Dealed, stream=True);
+
+            if r.status_code == 200:
+                print("success get nose case", i);
+                output_file_name = "result/"+ face_part + "/default_face" + str(i) + ".png";
+
+                # Set decode_content value to True, otherwise the downloaded image file's size will be zero.
+                r.raw.decode_content = True;
+                # Open a local file with wb ( write binary ) permission.
+
+                with open(output_file_name, 'wb') as f:
+                    shutil.copyfileobj(r.raw, f)
+                    print('Image sucessfully Downloaded: ', output_file_name);
+
+            elif r.status_code == 400:
+                print("bad request code for nose ", i);
+
+            else:
+                print('Image Couldn\'t be retreived');
+        json_file_data = json.dumps(Output_Dictionary)
+        json_file_name = "Nose.json"
+        with open(json_file_name, "w") as f:
+            f.write(json_file_data);
+            print("succssful create the Json of Nose")
+
 
 if __name__ == "__main__":
-	# Check if the image was retrieved successfully
-	nose_replace();
+    # Check if the image was retrieved successfully
+    print("the length of word range list is", len(word_range_list))
+    print("the length of replace word", len(word_list))
+    replacement()
