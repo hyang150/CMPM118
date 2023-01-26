@@ -97,7 +97,49 @@ def nose_replace():
 	with open(Json_file,"wb") as f:
 		f.write(Nose_json_data);
 		print("succssful create the Json of Nose")
-			
+
+
+def nose_replace():
+	"""
+	This is the ear replace funtion
+	it will replace all the ear on the default faces from orginal link
+
+	:return: it does not return anything, but it will generate the files
+	"""
+	try:
+		os.mkdir('result');
+	except FileExistsError:
+		print("folder already exists");
+
+	try:
+		os.mkdir("result/ear_result");
+	except FileExistsError:
+		print("folder already exists");
+
+	for i in range(1434, 2000):  # The range here could be changed to check every number.
+		str_ear_replace = str("ear=" + str(i));  # replace the string in the url
+		print(str_ear_replace);
+		str_image_text_Dealed = image_url_Ori.replace("ear=1491", str_ear_replace);
+		r = requests.get(str_image_text_Dealed, stream=True);
+		if r.status_code == 200:
+			print("success get ear case", i);
+			Ear_Dictionary["ear"].append(i);  # update the list
+			output_file_name = "result/ear_result/" + "default_face" + "_ear_" + str(i) + ".png";
+			# Set decode_content value to True, otherwise the downloaded image file's size will be zero.
+			r.raw.decode_content = True;
+			# Open a local file with wb ( write binary ) permission.
+			with open(output_file_name, 'wb') as f:
+				shutil.copyfileobj(r.raw, f)
+				print('Image sucessfully Downloaded: ', output_file_name);
+		elif r.status_code == 400:
+			print("bad request code for ear ", i);
+		else:
+			print('Image Couldn\'t be retreived');
+	ear_json_data = json.dumps(Ear_Dictionary)
+	Json_file = "ear.json"
+	with open(Json_file, "wb") as f:
+		f.write(ear_json_data);
+		print("succssful create the Json of ear")
 
 if __name__ == "__main__":
 	# Check if the image was retrieved successfully
