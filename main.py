@@ -3,7 +3,6 @@ import json
 import multiprocessing
 import os  # use OS lib to create
 import shutil  # to save it locally
-
 import requests  # to get image from the web
 
 """
